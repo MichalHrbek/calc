@@ -3,9 +3,8 @@
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
 
 bool init_screen() {
-	static_assert(TEXT_ROWS >= 4, "At least 4 lines of text are needed");
 	if (!u8g2.begin()) return false;
-	u8g2.setFont(u8g2_font_spleen8x16_mr);
+	u8g2.setFont(font_default.font);
 	u8g2.setFontRefHeightExtendedText();
 	u8g2.setDrawColor(1);
 	u8g2.setFontPosTop();

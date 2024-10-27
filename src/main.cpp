@@ -59,13 +59,15 @@ std::array<Func,2> func_menu_list = {
 };
 
 void open_menu() {
+	u8g2.setFont(font_small.font);
 	u8g2.clearBuffer();
 	u8g2.setCursor(0,0);
 	for (size_t i = 0; i < func_menu_list.size(); i++)
 	{
 		Func f = func_menu_list.at(i);
-		if (i) u8g2.print(", ");
-		u8g2.printf("%c - %s", charmap[f.key], f.name);
+		if (i) u8g2.print(" ");
+		if (u8g2.getStrWidth(f.name) + u8g2.getCursorX() > SCREEN_W) u8g2.setCursor(0,u8g2.getCursorY()+font_small.h);
+		u8g2.printf("%c-%s", charmap[f.key], f.name);
 	}
 	u8g2.sendBuffer();
 	keypad.wait_until_released(KEY_D);
@@ -75,6 +77,7 @@ void open_menu() {
 		Func f = func_menu_list.at(i);
 		if (f.key == func_key) f.trigger();
 	}
+	u8g2.setFont(font_default.font);
 	draw_expr();
 	keypad.wait_until_released(func_key);
 }

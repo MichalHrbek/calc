@@ -22,15 +22,15 @@ void Expression::remove(uint16_t n)
 void Expression::draw()
 {
 	// Expr
-	u8g2.setCursor(0,FONT_H);
+	u8g2.setCursor(0,font_default.h);
 	u8g2.print(text.c_str());
 	// Eval
 	if (error) {
-		u8g2.setCursor((error-1)*FONT_W,2*FONT_H);
+		u8g2.setCursor((error-1)*font_default.w,2*font_default.h);
 		u8g2.print('^');
 	}
-	u8g2.setCursor(0,3*FONT_H);
-	u8g2.printf("%*f", TEXT_COLUMNS, result);
+	u8g2.setCursor(0,3*font_default.h);
+	u8g2.printf("%*f", u8g2.getCols(), result);
 }
 
 void Expression::clear()
