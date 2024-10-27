@@ -53,9 +53,12 @@ inline Func alt_text(KeypadKey key, uint8_t modifiers, const char* text) {
 	};
 }
 
-std::array<Func,2> func_menu_list = {
+std::array<Func,5> func_menu_list = {
 	alt_text(KEY_1, 0, "sin("),
 	alt_text(KEY_2, 0, "cos("),
+	alt_text(KEY_3, 0, "tg("),
+	alt_text(KEY_4, 0, "pi"),
+	alt_text(KEY_5, 0, "e"),
 };
 
 void open_menu() {
