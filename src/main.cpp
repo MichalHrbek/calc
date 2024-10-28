@@ -32,10 +32,14 @@ inline Func alt_text(KeypadKey key, uint8_t modifiers, const char* text) {
 
 const Func func_menu_list[] = {
 	alt_text(KEY_1, 0, "sin("),
-	alt_text(KEY_2, 0, "cos("),
-	alt_text(KEY_3, 0, "tg("),
-	alt_text(KEY_4, 0, "pi"),
-	alt_text(KEY_5, 0, "e"),
+	alt_text(KEY_2, 0, "asin("),
+	alt_text(KEY_3, 0, "cos("),
+	alt_text(KEY_4, 0, "acos("),
+	alt_text(KEY_5, 0, "tan("),
+	alt_text(KEY_6, 0, "atan("),
+	alt_text(KEY_7, 0, "abs("),
+	alt_text(KEY_A, 0, "pi"),
+	alt_text(KEY_B, 0, "e"),
 };
 
 const Func base_key_list[] = {
@@ -46,6 +50,7 @@ const Func base_key_list[] = {
 	alt_text(KEY_A, MOD_SHIFT, "("),
 	alt_text(KEY_B, MOD_SHIFT, ")"),
 	alt_text(KEY_9, MOD_SHIFT, "."),
+	alt_text(KEY_2, MOD_SHIFT, "sqrt("),
 	{
 		KEY_HASH,
 		MOD_SHIFT,
