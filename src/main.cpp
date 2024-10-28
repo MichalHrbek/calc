@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include "hw.h"
 #include "calc.h"
+#include "ui.h"
 
 void setup() {
 	Serial.begin(115200);
@@ -16,30 +17,6 @@ void setup() {
 	u8g2.sendBuffer();
 }
 
-uint8_t cmod = 0;
-
-void draw_mod() {
-	for (size_t i = 0; i < sizeof(uint8_t)*8; i++)
-	{
-		if (cmod & (1<<i)) {
-			u8g2.drawButtonUTF8(i*10+1,0, U8G2_BTN_INV, 0,  1, 1, mod_names[i]);
-		}
-	}
-}
-
-void draw_expr() {
-	u8g2.clearBuffer();
-	draw_mod();
-	curr_expr.draw();
-	u8g2.sendBuffer();
-}
-
-struct Func {
-	KeypadKey key;
-	uint8_t modifiers;
-	const char* name;
-	std::function<void()> trigger;
-};
 
 inline Func alt_text(KeypadKey key, uint8_t modifiers, const char* text) {
 	return {
@@ -60,30 +37,6 @@ std::array<Func,5> func_menu_list = {
 	alt_text(KEY_4, 0, "pi"),
 	alt_text(KEY_5, 0, "e"),
 };
-
-void open_menu() {
-	u8g2.setFont(font_small.font);
-	u8g2.clearBuffer();
-	u8g2.setCursor(0,0);
-	for (size_t i = 0; i < func_menu_list.size(); i++)
-	{
-		Func f = func_menu_list.at(i);
-		if (i) u8g2.print(" ");
-		if (u8g2.getStrWidth(f.name) + u8g2.getCursorX() > SCREEN_W) u8g2.setCursor(0,u8g2.getCursorY()+font_small.h);
-		u8g2.printf("%c-%s", charmap[f.key], f.name);
-	}
-	u8g2.sendBuffer();
-	keypad.wait_until_released(KEY_D);
-	uint16_t func_key = keypad.wait_for_key();
-	for (size_t i = 0; i < func_menu_list.size(); i++)
-	{
-		Func f = func_menu_list.at(i);
-		if (f.key == func_key) f.trigger();
-	}
-	u8g2.setFont(font_default.font);
-	draw_expr();
-	keypad.wait_until_released(func_key);
-}
 
 std::array<Func,11> base_key_list = {
 	alt_text(KEY_A, 0, "+"),
@@ -129,7 +82,7 @@ std::array<Func,11> base_key_list = {
 		MOD_SHIFT,
 		"open menu",
 		[]() {
-			open_menu();
+			open_menu(&func_menu_list.front(), func_menu_list.size());
 		}
 	},
 };
