@@ -14,6 +14,7 @@ class Expression {
 		void remove(uint16_t n);
 		void draw();
 		void clear();
+		void move_cursor(int8_t delta);
 };
 
 

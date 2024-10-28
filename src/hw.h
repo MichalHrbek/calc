@@ -15,8 +15,8 @@ struct FontInfo {
 	uint8_t h;
 };
 
-const FontInfo font_default = {u8g2_font_spleen8x16_mr, 8, 16};
-const FontInfo font_small = {u8g2_font_spleen5x8_mr, 5, 8};
+const FontInfo font_default = {u8g2_font_spleen8x16_mf, 8, 16};
+const FontInfo font_small = {u8g2_font_spleen5x8_mf, 5, 8};
 
 bool init_screen();
 

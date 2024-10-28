@@ -21,4 +21,5 @@ class Keypad {
 		void wait_for_key(uint16_t key);
 		uint16_t wait_for_release();
 		void wait_until_released(uint16_t key);
+		void wait_until_released();
 };

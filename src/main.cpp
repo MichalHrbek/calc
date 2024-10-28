@@ -3,6 +3,7 @@
 #include "hw.h"
 #include "calc.h"
 #include "ui.h"
+#include "utils.h"
 
 void setup() {
 	Serial.begin(115200);
@@ -17,7 +18,6 @@ void setup() {
 	u8g2.sendBuffer();
 }
 
-
 inline Func alt_text(KeypadKey key, uint8_t modifiers, const char* text) {
 	return {
 		key,
@@ -30,7 +30,7 @@ inline Func alt_text(KeypadKey key, uint8_t modifiers, const char* text) {
 	};
 }
 
-std::array<Func,5> func_menu_list = {
+const Func func_menu_list[] = {
 	alt_text(KEY_1, 0, "sin("),
 	alt_text(KEY_2, 0, "cos("),
 	alt_text(KEY_3, 0, "tg("),
@@ -38,13 +38,14 @@ std::array<Func,5> func_menu_list = {
 	alt_text(KEY_5, 0, "e"),
 };
 
-std::array<Func,11> base_key_list = {
+const Func base_key_list[] = {
 	alt_text(KEY_A, 0, "+"),
 	alt_text(KEY_B, 0, "-"),
 	alt_text(KEY_HASH, 0, "/"),
 	alt_text(KEY_STAR, MOD_SHIFT, "^"),
 	alt_text(KEY_A, MOD_SHIFT, "("),
 	alt_text(KEY_B, MOD_SHIFT, ")"),
+	alt_text(KEY_9, MOD_SHIFT, "."),
 	{
 		KEY_HASH,
 		MOD_SHIFT,
@@ -52,6 +53,12 @@ std::array<Func,11> base_key_list = {
 		[]() {
 			curr_expr.eval();
 		}
+	},
+	{
+		KEY_D,
+		MOD_SHIFT,
+		"unshift",
+		[]() {}
 	},
 	{
 		KEY_C,
@@ -74,23 +81,47 @@ std::array<Func,11> base_key_list = {
 		0,
 		"shift",
 		[]() {
-			cmod ^= MOD_SHIFT;
+			cmod |= MOD_SHIFT;
 		}
 	},
 	{
-		KEY_D,
+		KEY_0,
 		MOD_SHIFT,
 		"open menu",
 		[]() {
-			open_menu(&func_menu_list.front(), func_menu_list.size());
+			open_menu(func_menu_list, arraySize(func_menu_list));
 		}
+	},
+		{
+		KEY_4,
+		MOD_SHIFT,
+		"move left",
+		[]() {
+			cmod |= MOD_SHIFT;
+			curr_expr.move_cursor(-1);
+		}
+	},
+	{
+		KEY_6,
+		MOD_SHIFT,
+		"move right",
+		[]() {
+			cmod |= MOD_SHIFT;
+			curr_expr.move_cursor(1);
+		}
+	},
+	{
+		KEY_5,
+		MOD_SHIFT,
+		"confirm",
+		[]() {}
 	},
 };
 
 void loop(){
 	uint16_t key = keypad.wait_for_key();
 	bool found = false;
-	for (size_t i = 0; i < base_key_list.size(); i++)
+	for (size_t i = 0; i < arraySize(base_key_list); i++)
 	{
 		Func f = base_key_list[i];
 		if (f.key == key && cmod == f.modifiers) {

@@ -24,11 +24,21 @@ void Expression::draw()
 	// Expr
 	u8g2.setCursor(0,font_default.h);
 	u8g2.print(text.c_str());
-	// Eval
-	if (error) {
+	// Error + Cursor
+	if (error == cursor+1) {
 		u8g2.setCursor((error-1)*font_default.w,2*font_default.h);
+		u8g2.print((char)202);
+	} else {
+		// Error
+		if (error) {
+			u8g2.setCursor((error-1)*font_default.w,2*font_default.h);
+			u8g2.print('E');
+		}
+		// Cursor
+		u8g2.setCursor(cursor*font_default.w,2*font_default.h);
 		u8g2.print('^');
 	}
+	// Eval
 	u8g2.setCursor(0,3*font_default.h);
 	u8g2.printf("%*f", u8g2.getCols(), result);
 }
@@ -39,6 +49,14 @@ void Expression::clear()
 	cursor = 0;
 	error = 0;
 	result = 0.0;
+}
+
+void Expression::move_cursor(int8_t delta)
+{
+	cursor += delta;
+	// Wraps around only +1 and -1
+	if (cursor < 0) cursor = text.size();
+	if (cursor > text.size()) cursor = 0; // There might be some issues with comparing signed and unsigned (size_t)
 }
 
 Expression curr_expr;

@@ -3,7 +3,7 @@
 
 uint8_t cmod = 0;
 
-void open_menu(Func* func_list, size_t n) {
+void open_menu(const Func* func_list, size_t n) {
 	u8g2.setFont(font_small.font);
 	u8g2.clearBuffer();
 	u8g2.setCursor(0,0);
@@ -15,7 +15,7 @@ void open_menu(Func* func_list, size_t n) {
 		u8g2.printf("%c-%s", charmap[f.key], f.name);
 	}
 	u8g2.sendBuffer();
-	keypad.wait_until_released(KEY_D);
+	keypad.wait_until_released();
 	uint16_t func_key = keypad.wait_for_key();
 	for (size_t i = 0; i < n; i++)
 	{

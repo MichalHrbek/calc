@@ -63,6 +63,24 @@ void Keypad::wait_until_released(uint16_t key)
 	delay(REBOUND_TIME);
 }
 
+void Keypad::wait_until_released()
+{
+	while(true)
+	{
+		poll();
+		bool empty = true;
+		for (size_t i = 0; i < _n_columns*_n_rows; i++)
+		{
+			if (keys[i]) empty = false;
+		}
+		if (empty) {
+			delay(REBOUND_TIME);
+			return;
+		}
+	}
+	delay(REBOUND_TIME);
+}
+
 void Keypad::begin() {
 	for (size_t i = 0; i < _n_rows; i++)
 	{
