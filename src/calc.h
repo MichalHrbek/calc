@@ -24,3 +24,4 @@ enum Modifier : uint8_t {
 };
 
 extern Expression curr_expr;
+extern uint8_t cmod;

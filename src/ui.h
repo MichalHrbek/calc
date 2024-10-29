@@ -1,8 +1,6 @@
 // #pragma once
 #include "hw.h"
 
-extern uint8_t cmod;
-
 struct Func {
 	KeypadKey key;
 	uint8_t modifiers;

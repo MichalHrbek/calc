@@ -1,8 +1,6 @@
 #include "ui.h"
 #include "calc.h"
 
-uint8_t cmod = 0;
-
 void open_menu(const Func* func_list, size_t n) {
 	u8g2.setFont(font_small.font);
 	u8g2.clearBuffer();

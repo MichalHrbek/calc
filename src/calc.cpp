@@ -60,3 +60,4 @@ void Expression::move_cursor(int8_t delta)
 }
 
 Expression curr_expr;
+uint8_t cmod = 0;
