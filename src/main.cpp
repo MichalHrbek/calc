@@ -65,6 +65,7 @@ const Func base_key_list[] = {
 	alt_text(KEY_A, MOD_SHIFT, "("),
 	alt_text(KEY_B, MOD_SHIFT, ")"),
 	alt_text(KEY_9, MOD_SHIFT, "."),
+	alt_text(KEY_1, MOD_SHIFT, "*10^"),
 	alt_text(KEY_2, MOD_SHIFT, "sqrt("),
 	{
 		KEY_HASH,
