@@ -78,7 +78,6 @@ void Keypad::wait_until_released()
 			return;
 		}
 	}
-	delay(REBOUND_TIME);
 }
 
 void Keypad::begin() {

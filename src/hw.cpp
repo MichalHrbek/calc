@@ -1,10 +1,18 @@
 #include "hw.h"
 
 U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE);
+FontInfo cfont = font_default;
 
-bool init_screen() {
+void set_font(FontInfo font)
+{
+	cfont = font;
+	u8g2.setFont(cfont.font);
+}
+
+bool init_screen()
+{
 	if (!u8g2.begin()) return false;
-	u8g2.setFont(font_default.font);
+	set_font(cfont);
 	u8g2.setFontRefHeightExtendedText();
 	u8g2.setDrawColor(1);
 	u8g2.setFontPosTop();

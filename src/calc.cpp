@@ -22,24 +22,24 @@ void Expression::remove(uint16_t n)
 void Expression::draw()
 {
 	// Expr
-	u8g2.setCursor(0,font_default.h);
+	u8g2.setCursor(0,cfont.h);
 	u8g2.print(text.c_str());
 	// Error + Cursor
 	if (error == cursor+1) {
-		u8g2.setCursor((error-1)*font_default.w,2*font_default.h);
+		u8g2.setCursor((error-1)*cfont.w,2*cfont.h);
 		u8g2.print((char)202);
 	} else {
 		// Error
 		if (error) {
-			u8g2.setCursor((error-1)*font_default.w,2*font_default.h);
+			u8g2.setCursor((error-1)*cfont.w,2*cfont.h);
 			u8g2.print('E');
 		}
 		// Cursor
-		u8g2.setCursor(cursor*font_default.w,2*font_default.h);
+		u8g2.setCursor(cursor*cfont.w,2*cfont.h);
 		u8g2.print('^');
 	}
 	// Eval
-	u8g2.setCursor(0,3*font_default.h);
+	u8g2.setCursor(0,3*cfont.h);
 	u8g2.printf("%*f", u8g2.getCols(), result);
 }
 

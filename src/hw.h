@@ -2,9 +2,6 @@
 #include <U8g2lib.h>
 #include "keypad.h"
 
-extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
-extern Keypad keypad;
-
 // Screen
 #define SCREEN_W 128
 #define SCREEN_H 64
@@ -17,6 +14,8 @@ struct FontInfo {
 
 const FontInfo font_default = {u8g2_font_spleen8x16_mf, 8, 16};
 const FontInfo font_small = {u8g2_font_spleen5x8_mf, 5, 8};
+
+void set_font(FontInfo font);
 
 bool init_screen();
 
@@ -42,5 +41,15 @@ enum KeypadKey : uint16_t {
 	KEY_0,
 	KEY_HASH,
 	KEY_D,
+
+	KEY_PREV = KEY_4,
+	KEY_NEXT = KEY_6,
+	KEY_SELECT = KEY_5,
+	KEY_CANCEL = KEY_0,
 };
 void init_keypad();
+
+
+extern U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2;
+extern Keypad keypad;
+extern FontInfo cfont;

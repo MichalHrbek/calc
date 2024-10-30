@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Wire.h>
+#include <SPIFFS.h>
 #include "hw.h"
 #include "calc.h"
 #include "ui.h"
@@ -8,14 +9,13 @@
 void setup() {
 	Serial.begin(115200);
 	Wire.begin(39,37);
-	
+
 	init_screen();
 	init_keypad();
 
-	u8g2.clearBuffer();
-	u8g2.setCursor(0,0);
-	u8g2.print("/");
-	u8g2.sendBuffer();
+	SPIFFS.begin();
+
+	draw_expr();
 }
 
 inline Func alt_text(KeypadKey key, uint8_t modifiers, const char* text) {
@@ -40,6 +40,21 @@ const Func func_menu_list[] = {
 	alt_text(KEY_7, 0, "abs("),
 	alt_text(KEY_A, 0, "pi"),
 	alt_text(KEY_B, 0, "e"),
+	{
+		KEY_STAR,
+		0,
+		"FILE",
+		[]() {
+			Serial.println(ESP.getFreeHeap());
+			if (File f = file_menu("/")) {
+				set_font(font_small);
+				keypad.wait_until_released();
+				show_file(f);
+				set_font(font_default);
+			}
+			Serial.println(ESP.getFreeHeap());
+		}
+	},
 };
 
 const Func base_key_list[] = {
@@ -98,7 +113,7 @@ const Func base_key_list[] = {
 		}
 	},
 		{
-		KEY_4,
+		KEY_PREV,
 		MOD_SHIFT,
 		"move left",
 		[]() {
@@ -107,7 +122,7 @@ const Func base_key_list[] = {
 		}
 	},
 	{
-		KEY_6,
+		KEY_NEXT,
 		MOD_SHIFT,
 		"move right",
 		[]() {
@@ -116,7 +131,7 @@ const Func base_key_list[] = {
 		}
 	},
 	{
-		KEY_5,
+		KEY_SELECT,
 		MOD_SHIFT,
 		"confirm",
 		[]() {}
