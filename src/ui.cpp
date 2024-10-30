@@ -78,7 +78,7 @@ int32_t list_menu(const char* const* options, size_t n) {
 		if (key == KEY_PREV) selected--; // Prev
 		else if (key == KEY_NEXT) selected++; // Next
 		else if (key == KEY_SELECT) return selected; // Select
-		else if (key == KEY_0) return -1; // Cancel
+		else if (key == KEY_CANCEL) return -1; // Cancel
 	}
 }
 
@@ -129,7 +129,7 @@ void show_file(File f) {
 		uint16_t key = keypad.wait_for_release();
 		if (key == KEY_PREV) scroll =  _max(scroll-1,0); // Up
 		else if (key == KEY_NEXT) scroll++; // Down
-		else if (key == KEY_0) break; // Cancel
+		else if (key == KEY_CANCEL) break; // Cancel
 	}
 	f.close();
 }
