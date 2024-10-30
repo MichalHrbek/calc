@@ -109,7 +109,9 @@ const Func base_key_list[] = {
 		MOD_SHIFT,
 		"open menu",
 		[]() {
+			set_font(font_small);
 			open_menu(func_menu_list, arraySize(func_menu_list));
+			set_font(font_default);
 		}
 	},
 		{
@@ -158,5 +160,5 @@ void loop(){
 	}
 
 	draw_expr();
-	keypad.wait_until_released(key);
+	keypad.wait_until_released();
 }

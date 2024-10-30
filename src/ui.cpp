@@ -5,7 +5,6 @@
 #include <Arduino.h>
 
 void open_menu(const Func* func_list, size_t n) {
-	u8g2.setFont(cfont.font);
 	u8g2.clearBuffer();
 	u8g2.setCursor(0,0);
 	for (size_t i = 0; i < n; i++)
@@ -23,9 +22,6 @@ void open_menu(const Func* func_list, size_t n) {
 		Func f = func_list[i];
 		if (f.key == func_key) f.trigger();
 	}
-	u8g2.setFont(cfont.font);
-	draw_expr();
-	keypad.wait_until_released(func_key);
 }
 
 void draw_mod(uint8_t mod) {
