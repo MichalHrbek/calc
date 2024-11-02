@@ -46,6 +46,11 @@ enum KeypadKey : uint16_t {
 	KEY_NEXT = KEY_6,
 	KEY_SELECT = KEY_5,
 	KEY_CANCEL = KEY_0,
+
+	KEY_LEFT = KEY_4,
+	KEY_RIGHT = KEY_6,
+	KEY_UP = KEY_2,
+	KEY_DOWN = KEY_8,
 };
 void init_keypad();
 

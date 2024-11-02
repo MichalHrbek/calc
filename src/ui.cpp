@@ -129,3 +129,84 @@ void show_file(File f) {
 	}
 	f.close();
 }
+
+char _pos_to_char(bool capital, uint8_t selected)
+{
+	selected += 32;
+	if(selected > 96) selected += 26; 
+	if(!capital && selected > 64 && selected < 91) selected+=32;
+	return selected;
+}
+
+void draw_keyboard(bool capital, uint8_t selected)
+{
+	for (uint8_t i = 0; i < 127-32-26; i++)
+	{
+		if (selected == i)
+		{
+			u8g2.setDrawColor(0);
+			u8g2.print(_pos_to_char(capital,i));
+			u8g2.setDrawColor(1);
+		}
+		else u8g2.print(_pos_to_char(capital,i));
+
+		if (u8g2.getCursorX()+cfont.w >= SCREEN_W) u8g2.setCursor(0,u8g2.getCursorY()+cfont.h);
+	}
+}
+
+std::string text_input(const char* start)
+{
+	ScopedFontChange c(font_small);
+
+	std::string text(start);
+	int16_t selected = 0;
+	uint8_t line_w = SCREEN_W/cfont.w;
+	bool capital = false;
+	
+	while (true) {
+		// Drawing
+		u8g2.clearBuffer();
+		u8g2.setCursor(0,0);
+		u8g2.print(text.c_str());
+		u8g2.setCursor(0,cfont.h*2);
+		draw_keyboard(capital,selected);
+		u8g2.sendBuffer();
+
+		// Input
+		int16_t prev = selected;
+		uint16_t key = keypad.wait_for_release();
+		switch (key)
+		{
+		case KEY_LEFT:
+			if(selected % line_w) selected--;
+			else if(selected==69-(69%line_w)) selected += 69%line_w-1;
+			else selected += line_w-1;
+			break;
+		case KEY_RIGHT:
+			if(!(++selected % line_w)) selected -= line_w;
+			else if(selected==69) selected -= 69%line_w;
+			break;
+		case KEY_UP:
+			selected-=line_w;
+			break;
+		case KEY_DOWN:
+			selected+=line_w;
+			break;
+		case KEY_D:
+			capital = !capital;
+			break;
+		case KEY_SELECT:
+			text += _pos_to_char(capital,selected);
+			break;
+		case KEY_C:
+			if(!text.empty()) text.pop_back();
+			break;
+		case KEY_0:
+			return text;
+			break;
+		default:
+			break;
+		}
+		if (selected > 68 || selected < 0) selected = prev;
+	}
+}

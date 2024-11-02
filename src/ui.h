@@ -29,3 +29,4 @@ void draw_expr();
 void draw_mod();
 File file_menu(const char* path);
 void show_file(File f);
+std::string text_input(const char* start="");
