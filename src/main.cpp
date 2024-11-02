@@ -47,10 +47,9 @@ const Func func_menu_list[] = {
 		[]() {
 			Serial.println(ESP.getFreeHeap());
 			if (File f = file_menu("/")) {
-				set_font(font_small);
+				ScopedFontChange c(font_small);
 				keypad.wait_until_released();
 				show_file(f);
-				set_font(font_default);
 			}
 			Serial.println(ESP.getFreeHeap());
 		}

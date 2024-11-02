@@ -9,6 +9,21 @@ struct Func {
 	std::function<void()> trigger;
 };
 
+class ScopedFontChange {
+	private:
+		FontInfo _prev_font;
+	public:
+		ScopedFontChange(FontInfo font)
+		{
+			_prev_font = cfont;
+			set_font(font);
+		};
+		~ScopedFontChange()
+		{
+			set_font(_prev_font);
+		}
+};
+
 void open_menu(const Func* func_list, size_t n);
 void draw_expr();
 void draw_mod();
