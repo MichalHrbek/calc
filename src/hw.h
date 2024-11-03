@@ -45,7 +45,9 @@ enum KeypadKey : uint16_t {
 	KEY_PREV = KEY_4,
 	KEY_NEXT = KEY_6,
 	KEY_SELECT = KEY_5,
+
 	KEY_CANCEL = KEY_0,
+	KEY_CONFIRM = KEY_STAR,
 
 	KEY_LEFT = KEY_4,
 	KEY_RIGHT = KEY_6,

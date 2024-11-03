@@ -3,6 +3,7 @@
 #include <SPIFFS.h>
 #include <vector>
 #include <Arduino.h>
+#include "utils.h"
 
 void open_menu(const Func* func_list, size_t n) {
 	u8g2.clearBuffer();
@@ -25,24 +26,18 @@ void open_menu(const Func* func_list, size_t n) {
 }
 
 void draw_mod(uint8_t mod) {
-	for (size_t i = 0; i < sizeof(uint8_t)*8; i++)
-	{
-		if (mod & (1<<i)) {
-			u8g2.drawButtonUTF8(i*(cfont.w+2)+1,0, U8G2_BTN_INV, 0,  1, 1, mod_names[i]);
-		}
-	}
-}
-
-void print_mod(uint8_t mod) {
 	if (!mod) return;
-	u8g2.print('[');
+	u8g2.setCursor(0,0);
+	u8g2.setColorIndex(0);
 	for (size_t i = 0; i < sizeof(uint8_t)*8; i++)
 	{
 		if (mod & (1<<i)) {
+			u8g2.print(' ');
 			u8g2.print(mod_names[i]);
+			u8g2.print(' ');
 		}
 	}
-	u8g2.print(']');
+	u8g2.setColorIndex(1);
 }
 
 void draw_expr() {
@@ -57,7 +52,7 @@ int32_t list_menu(const char* const* options, size_t n) {
 	while (true) {
 		keypad.wait_until_released();
 		selected = _max(_min(selected,(int32_t)n-1),0);
-		u8g2.clearDisplay();
+		u8g2.clearBuffer();
 		u8g2.setCursor(0, 0);
 
 		for (size_t i = selected; i < n; i++)
@@ -71,20 +66,21 @@ int32_t list_menu(const char* const* options, size_t n) {
 		
 		// Input
 		uint16_t key = keypad.wait_for_key();
-		if (key == KEY_PREV) selected--; // Prev
-		else if (key == KEY_NEXT) selected++; // Next
-		else if (key == KEY_SELECT) return selected; // Select
+		if (key == KEY_PREV || key == KEY_UP) selected--; // Prev
+		else if (key == KEY_NEXT || key == KEY_DOWN) selected++; // Next
+		else if (key == KEY_SELECT || key == KEY_CONFIRM) return selected; // Select
 		else if (key == KEY_CANCEL) return -1; // Cancel
 	}
 }
 
-File file_menu(const char* path) {
+File file_menu(const char* path, bool show_path_prefix) {
 	File root = SPIFFS.open(path);
 	std::vector<File> files; // Making sure the names don't get freed
 	std::vector<const char*> names;
+	size_t prefix_len = strlen(path);
 	while (File f = root.openNextFile()) {
 		files.push_back(f);
-		names.push_back(f.name());
+		names.push_back(show_path_prefix ? f.path() : (f.path()+prefix_len));
 	}
 	int32_t selected = list_menu(names.data(), names.size());
 	
@@ -93,7 +89,7 @@ File file_menu(const char* path) {
 }
 
 void show_file(File f) {
-	Serial.printf("Reading: %s\n", f.name());
+	Serial.printf("Reading: %s\n", f.path());
 	int32_t scroll = 0;
 	int32_t s = f.size();
 	String text = f.readString();
@@ -118,14 +114,18 @@ void show_file(File f) {
 			}
 			if (line_pos >= 0) u8g2.print(c);
 		}
+		if (line_pos < 0) {
+			scroll--;
+			continue;
+		}
 		
 		u8g2.sendBuffer();
 
 		// Input
 		uint16_t key = keypad.wait_for_release();
-		if (key == KEY_PREV) scroll =  _max(scroll-1,0); // Up
-		else if (key == KEY_NEXT) scroll++; // Down
-		else if (key == KEY_CANCEL) break; // Cancel
+		if (key == KEY_UP) scroll =  _max(scroll-1,0);
+		else if (key == KEY_DOWN) scroll++;
+		else if (key == KEY_CANCEL || key == KEY_CONFIRM) break; // Cancel
 	}
 	f.close();
 }
@@ -156,8 +156,8 @@ void draw_keyboard(bool capital, uint8_t selected)
 
 std::string text_input(const char* start)
 {
+	keypad.wait_until_released();
 	ScopedFontChange c(font_small);
-
 	std::string text(start);
 	int16_t selected = 0;
 	uint8_t line_w = SCREEN_W/cfont.w;
@@ -201,12 +201,34 @@ std::string text_input(const char* start)
 		case KEY_C:
 			if(!text.empty()) text.pop_back();
 			break;
-		case KEY_0:
+		case KEY_CONFIRM:
 			return text;
 			break;
 		default:
 			break;
 		}
 		if (selected > 68 || selected < 0) selected = prev;
+	}
+}
+
+void config_menu() {
+	ScopedFontChange c(font_small);
+	File f = file_menu("/config", false);
+	const char* const o[] = {"Read", "Write"};
+	switch (list_menu(o,2))
+	{
+	case 0:
+		show_file(f);
+		break;
+	case 1:
+	{
+		std::string s = text_input(f.readString().c_str());
+		f = SPIFFS.open(f.path(), FILE_WRITE);
+		f.write((uint8_t*)s.c_str(),s.length());
+		break;
+	}
+	default:
+		return;
+		break;
 	}
 }

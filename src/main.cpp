@@ -5,6 +5,7 @@
 #include "calc.h"
 #include "ui.h"
 #include "utils.h"
+#include "config.h"
 
 void setup() {
 	Serial.begin(115200);
@@ -13,7 +14,7 @@ void setup() {
 	init_screen();
 	init_keypad();
 
-	SPIFFS.begin();
+	SPIFFS.begin(true);
 
 	draw_expr();
 }
@@ -45,15 +46,19 @@ const Func func_menu_list[] = {
 		0,
 		"FILE",
 		[]() {
-			Serial.println(ESP.getFreeHeap());
 			if (File f = file_menu("/")) {
 				ScopedFontChange c(font_small);
 				keypad.wait_until_released();
 				show_file(f);
 			}
-			Serial.println(ESP.getFreeHeap());
 		}
 	},
+	{
+		KEY_HASH,
+		0,
+		"CONFIG",
+		config_menu
+	}
 };
 
 const Func base_key_list[] = {

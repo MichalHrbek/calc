@@ -1,4 +1,4 @@
-// #pragma once
+#pragma once
 #include "hw.h"
 #include <FS.h>
 
@@ -27,6 +27,7 @@ class ScopedFontChange {
 void open_menu(const Func* func_list, size_t n);
 void draw_expr();
 void draw_mod();
-File file_menu(const char* path);
+File file_menu(const char* path, bool show_path_prefix=true);
 void show_file(File f);
 std::string text_input(const char* start="");
+void config_menu();
