@@ -31,7 +31,7 @@ inline Func alt_text(KeypadKey key, uint8_t modifiers, const char* text) {
 	};
 }
 
-const Func func_menu_list[] = {
+const Func const func_menu_list[] = {
 	alt_text(KEY_1, 0, "sin("),
 	alt_text(KEY_2, 0, "asin("),
 	alt_text(KEY_3, 0, "cos("),
@@ -61,7 +61,7 @@ const Func func_menu_list[] = {
 	}
 };
 
-const Func base_key_list[] = {
+const Func const base_key_list[] = {
 	alt_text(KEY_A, 0, "+"),
 	alt_text(KEY_B, 0, "-"),
 	alt_text(KEY_HASH, 0, "/"),

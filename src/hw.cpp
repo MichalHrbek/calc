@@ -20,8 +20,8 @@ bool init_screen()
 	return true;
 }
 
-uint8_t rows[] = {1,2,4,6};
-uint8_t columns[] = {8,10,13,14};
+const uint8_t rows[] = {1,2,4,6};
+const uint8_t columns[] = {8,10,13,14};
 Keypad keypad(KEYPAD_ROWS, KEYPAD_COLUMNS, rows, columns);
 
 void init_keypad() {
