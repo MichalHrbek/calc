@@ -12,7 +12,7 @@ void open_menu(const Func* func_list, size_t n) {
 	{
 		Func f = func_list[i];
 		if (i) u8g2.print(" ");
-		if (u8g2.getStrWidth(f.name) + u8g2.getCursorX() > SCREEN_W) u8g2.setCursor(0,u8g2.getCursorY()+cfont.h);
+		if ((u8g2.getStrWidth(f.name)+2) + u8g2.getCursorX() > SCREEN_W) u8g2.setCursor(0,u8g2.getCursorY()+cfont.h);
 		u8g2.printf("%c-%s", charmap[f.key], f.name);
 	}
 	u8g2.sendBuffer();
