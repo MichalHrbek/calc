@@ -6,6 +6,7 @@
 #include "ui.h"
 #include "utils.h"
 #include "config.h"
+#include "wireless.h"
 
 void setup() {
 	Serial.begin(115200);
@@ -13,6 +14,7 @@ void setup() {
 
 	init_screen();
 	init_keypad();
+	init_wifi();
 
 	SPIFFS.begin(true);
 
@@ -58,6 +60,12 @@ const Func func_menu_list[] = {
 		0,
 		"CONFIG",
 		config_menu
+	},
+	{
+		KEY_C,
+		0,
+		"WIFI",
+		wifi_menu
 	}
 };
 

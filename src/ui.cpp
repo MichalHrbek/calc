@@ -12,7 +12,7 @@ void open_menu(const Func* func_list, size_t n) {
 	{
 		Func f = func_list[i];
 		if (i) u8g2.print(" ");
-		if ((u8g2.getStrWidth(f.name)+2) + u8g2.getCursorX() > SCREEN_W) u8g2.setCursor(0,u8g2.getCursorY()+cfont.h);
+		if ((u8g2.getStrWidth(f.name)+2) + u8g2.getCursorX() > SCREEN_W) line_break();
 		u8g2.printf("%c-%s", charmap[f.key], f.name);
 	}
 	u8g2.sendBuffer();
@@ -47,7 +47,7 @@ void draw_expr() {
 	u8g2.sendBuffer();
 }
 
-int32_t list_menu(const char* const* options, size_t n) {
+int32_t list_menu(const char *options[], size_t n) {
 	int32_t selected = 0;
 	while (true) {
 		keypad.wait_until_released();
@@ -59,13 +59,13 @@ int32_t list_menu(const char* const* options, size_t n) {
 		{
 			u8g2.print(options[i]);
 			if (i == selected) u8g2.print(" <-");
-			u8g2.setCursor(0,u8g2.getCursorY()+cfont.h);
+			line_break();
 			if (u8g2.getCursorY() > SCREEN_H) break;
 		}
 		u8g2.sendBuffer();
 		
 		// Input
-		uint16_t key = keypad.wait_for_key();
+		uint16_t key = keypad.wait_for_release();
 		if (key == KEY_PREV || key == KEY_UP) selected--; // Prev
 		else if (key == KEY_NEXT || key == KEY_DOWN) selected++; // Next
 		else if (key == KEY_SELECT || key == KEY_CONFIRM) return selected; // Select
@@ -108,7 +108,7 @@ void show_file(File f) {
 				ll = i;
 				if (line_pos++ >= 0)
 				{
-					u8g2.setCursor(0,u8g2.getCursorY()+cfont.h);
+					line_break();
 					if (u8g2.getCursorY() > SCREEN_H) break;
 				}
 			}
@@ -150,15 +150,15 @@ void draw_keyboard(bool capital, uint8_t selected)
 		}
 		else u8g2.print(_pos_to_char(capital,i));
 
-		if (u8g2.getCursorX()+cfont.w >= SCREEN_W) u8g2.setCursor(0,u8g2.getCursorY()+cfont.h);
+		if (u8g2.getCursorX()+cfont.w >= SCREEN_W) line_break();
 	}
 }
 
-std::string text_input(const char* start)
+std::string text_input(const char* default_value, const char* prompt)
 {
 	keypad.wait_until_released();
 	ScopedFontChange c(font_small);
-	std::string text(start);
+	std::string text(default_value);
 	int16_t selected = 0;
 	uint8_t line_w = SCREEN_W/cfont.w;
 	bool capital = false;
@@ -167,6 +167,12 @@ std::string text_input(const char* start)
 		// Drawing
 		u8g2.clearBuffer();
 		u8g2.setCursor(0,0);
+		if (prompt)
+		{
+			ScopedColorChange c(0);
+			u8g2.print(prompt);
+			u8g2.print(":");
+		}
 		u8g2.print(text.c_str());
 		u8g2.setCursor(0,cfont.h*2);
 		draw_keyboard(capital,selected);
@@ -211,24 +217,17 @@ std::string text_input(const char* start)
 	}
 }
 
-void config_menu() {
-	ScopedFontChange c(font_small);
-	File f = file_menu("/config", false);
-	const char* const o[] = {"Read", "Write"};
-	switch (list_menu(o,2))
+void announce(const char *msg)
+{
+	u8g2.clearBuffer();
+	u8g2.setCursor(0,0);
+	size_t len = strlen(msg);
+	size_t pos = 0;
+	while (pos < len)
 	{
-	case 0:
-		show_file(f);
-		break;
-	case 1:
-	{
-		std::string s = text_input(f.readString().c_str());
-		f = SPIFFS.open(f.path(), FILE_WRITE);
-		f.write((uint8_t*)s.c_str(),s.length());
-		break;
+		u8g2.print(msg[pos++]);
+		if (msg[pos] == '\n' || u8g2.getCursorX() + cfont.w > SCREEN_W) line_break();
 	}
-	default:
-		return;
-		break;
-	}
+	u8g2.sendBuffer();
+	keypad.wait_for_release();	
 }
