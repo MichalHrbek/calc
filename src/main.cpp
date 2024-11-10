@@ -7,6 +7,7 @@
 #include "utils.h"
 #include "config.h"
 #include "wireless.h"
+#include "gemini.h"
 
 void setup() {
 	Serial.begin(115200);
@@ -66,7 +67,16 @@ const Func func_menu_list[] = {
 		0,
 		"WIFI",
 		wifi_menu
-	}
+	},
+	{
+		KEY_D,
+		0,
+		"Gemini",
+		[]() {
+			GeminiClient c;
+			c.get_response("What's AI?");
+		}
+	},
 };
 
 const Func base_key_list[] = {
