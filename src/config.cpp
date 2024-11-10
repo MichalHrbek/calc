@@ -6,13 +6,13 @@
 template <typename T>
 void write_config_value(const char* path, T value)
 {
-	File file = SPIFFS.open(path, FILE_WRITE);
+	File file = SPIFFS.open(path, FILE_WRITE, true);
 	if (file) file.write(&value,sizeof(T));
 }
 
 void write_config_string(const char* path, String value)
 {
-	File file = SPIFFS.open(path, FILE_WRITE);
+	File file = SPIFFS.open(path, FILE_WRITE, true);
 	if (file) file.write((uint8_t*)value.c_str(),value.length());
 }
 
@@ -27,7 +27,6 @@ T read_config_value(const char* path, T default_value)
 		file.readBytes(&value,sizeof(T));
 		return value;
 	}
-	else write_config_value<T>(path,default_value);
 	return default_value;
 }
 
@@ -35,7 +34,6 @@ String read_config_string(const char* path, const String default_value)
 {
 	File file = SPIFFS.open(path);
 	if (file) return file.readString();
-	else write_config_string(path,default_value);
 	return default_value;
 }
 
