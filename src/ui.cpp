@@ -90,9 +90,13 @@ File file_menu(const char* path, bool show_path_prefix) {
 
 void show_file(File f) {
 	Serial.printf("Reading: %s\n", f.path());
-	int32_t scroll = 0;
-	int32_t s = f.size();
 	String text = f.readString();
+	show_string(text);
+	f.close();
+}
+
+void show_string(const String& text) {
+	int32_t scroll = 0;
 	int32_t line_w = SCREEN_W/cfont.w;
 	while (true)
 	{
@@ -100,7 +104,7 @@ void show_file(File f) {
 		u8g2.clearBuffer();
 		int32_t line_pos = -scroll;
 		int32_t ll = 0;
-		for (size_t i = 0; i < s; i++)
+		for (size_t i = 0; i < text.length(); i++)
 		{
 			char c = text.charAt(i);
 			if (c == '\n' || (i-ll+1)*cfont.w > SCREEN_W)
@@ -125,9 +129,8 @@ void show_file(File f) {
 		uint16_t key = keypad.wait_for_release();
 		if (key == KEY_UP) scroll =  _max(scroll-1,0);
 		else if (key == KEY_DOWN) scroll++;
-		else if (key == KEY_CANCEL || key == KEY_CONFIRM) break; // Cancel
+		else if (key == KEY_CANCEL || key == KEY_CONFIRM) break;
 	}
-	f.close();
 }
 
 char _pos_to_char(bool capital, uint8_t selected)
@@ -154,11 +157,11 @@ void draw_keyboard(bool capital, uint8_t selected)
 	}
 }
 
-std::string text_input(const char* default_value, const char* prompt)
+String text_input(const char* default_value, const char* prompt)
 {
 	keypad.wait_until_released();
 	ScopedFontChange c(font_small);
-	std::string text(default_value);
+	String text(default_value);
 	int16_t selected = 0;
 	uint8_t line_w = SCREEN_W/cfont.w;
 	bool capital = false;
@@ -205,7 +208,7 @@ std::string text_input(const char* default_value, const char* prompt)
 			text += _pos_to_char(capital,selected);
 			break;
 		case KEY_C:
-			if(!text.empty()) text.pop_back();
+			if(text.length()) text.remove(text.length()-1);
 			break;
 		case KEY_CONFIRM:
 			return text;

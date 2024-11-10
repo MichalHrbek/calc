@@ -45,7 +45,8 @@ void draw_mod();
 int32_t list_menu(const char *options[], size_t n);
 File file_menu(const char* path, bool show_path_prefix=true);
 void show_file(File f);
-std::string text_input(const char* default_value="", const char* prompt=nullptr);
+void show_string(const String& text);
+String text_input(const char* default_value="", const char* prompt=nullptr);
 void announce(const char* msg);
 inline void line_break()
 {
