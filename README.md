@@ -20,7 +20,7 @@ The keypad has only 16 buttons, so there's a lot of key combinations even for ba
 ### Modifiers
 #### D = SHIFT
 <pre>
-|  sqrt(  |   *10^  |         |    (    |
+|   *10^  |  sqrt(  |         |    (    |
 |    ←    |    ×    |    →    |    )    |
 |         |         |    .    |  clear  |
 |    ^    |   menu  |    =    |    ×    |
