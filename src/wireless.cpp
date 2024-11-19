@@ -79,4 +79,8 @@ void init_wifi()
 {
 	WiFi.mode(WIFI_STA);
 	WiFi.onEvent(_on_connect, ARDUINO_EVENT_WIFI_STA_CONNECTED);
+	if (read_config_value<bool>("/config/wifi/auto_connect", false))
+	{
+		WiFi.begin(read_config_string("/config/wifi/ssid").c_str(), read_config_string("/config/wifi/password").c_str());
+	}
 }
