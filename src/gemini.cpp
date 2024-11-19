@@ -47,7 +47,7 @@ String GeminiClient::get_response(const String& prompt)
 			{
 				response = response.substring(0,i);
 				_chat.push_back({prompt, response});
-				break;
+				return response;
 			}
 		}
 	}
