@@ -45,7 +45,8 @@ String GeminiClient::get_response(const String& prompt)
 			// Unescaped quote = end
 			if (response.charAt(i) == '"')
 			{
-				return response.substring(0,i);
+				response = response.substring(0,i);
+				_chat.push_back({prompt, response});
 				break;
 			}
 		}
@@ -62,18 +63,6 @@ String GeminiClient::get_response(const String& prompt)
 		Serial.print("Error code: ");
 		Serial.println(_http.errorToString(response_code));
 	}
+	_chat.push_back({prompt, ""});
 	return "";
-// curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY} \
-// -H 'Content-Type: application/json' \
-// -d '{
-// "contents":[{
-//   "parts":[
-//     {"text": "Explain how AI works"},
-//   ]
-// }]
-// }'
-}
-
-void GeminiClient::show()
-{
 }

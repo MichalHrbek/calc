@@ -73,8 +73,9 @@ const Func func_menu_list[] = {
 		"Gemini",
 		[]() {
 			GeminiClient c;
-			String r = c.get_response(text_input("", "Prompt"));
-			announce(r.c_str());
+			String prompt = text_input("", "Prompt");
+			String response = c.get_response(prompt);
+			show_string("Prompt: " + prompt + "\nResponse: " + response);
 		}
 	},
 };
