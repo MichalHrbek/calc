@@ -12,12 +12,11 @@
 void setup() {
 	Serial.begin(115200);
 	Wire.begin(39,37);
+	SPIFFS.begin(true);
 
 	init_screen();
 	init_keypad();
 	init_wifi();
-
-	SPIFFS.begin(true);
 
 	draw_expr();
 }
@@ -74,7 +73,8 @@ const Func func_menu_list[] = {
 		"Gemini",
 		[]() {
 			GeminiClient c;
-			c.get_response("What's AI?");
+			String r = c.get_response(text_input("", "Prompt"));
+			announce(r.c_str());
 		}
 	},
 };

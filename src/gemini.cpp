@@ -1,44 +1,67 @@
 #include "gemini.h"
 #include "config.h"
 #include "ui.h"
-#include "utils.h"
-
-const char* host = "generativelanguage.googleapis.com";
+#include <HTTPClient.h>
 
 GeminiClient::GeminiClient()
 {
 	_key = read_config_string("/config/gemini/key");
-	_endpoint = "/v1beta/models/gemini-1.5-flash:generateContent?key=" + _key;
-	_client.setInsecure();
+	_endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=" + _key;
+	_wifi.setInsecure();
 }
 
-#define PROMPT_FORMAT "{\"contents\":[{\"parts\":[{\"text\": \"%s\"},]}]}"
 String GeminiClient::get_response(const String& prompt)
 {
-
-	if (!_client.connect(host, 443)) {
-		announce("Connection failed!");
+	HTTPClient _http;
+	if (!_http.begin(_wifi, _endpoint))
+	{
+		announce("Client error");
 		return "";
 	}
-	_client.println("POST " + _endpoint + " HTTP/1.1");
-	_client.println("Host: " + String(host));
-	_client.println("Content-Type: application/json");
-	_client.printf("Content-Length: %u\n", sizeof(PROMPT_FORMAT)-3+prompt.length());
-	_client.println("Connection: close");
-	_client.println();
-	
-	_client.printf(PROMPT_FORMAT, prompt.c_str());
-	_client.println();
-	
-	Serial.printf("Content-Length: %u\n", sizeof(PROMPT_FORMAT)-3+prompt.length());
-	Serial.printf(PROMPT_FORMAT, prompt.c_str());
-	while (_client.connected() || _client.available()) {
-		String line = _client.readStringUntil('\n');
-		if (line.length() == 0) break;
-		Serial.println(line);
-	}
+	_http.addHeader("Content-Type", "application/json");
+	String payload = "{\"contents\":[{\"parts\":[{\"text\": \"" + prompt + "\"},]}]}";
+	int response_code = _http.POST(payload);
 
-	_client.stop();
+	if (response_code == 200)
+	{
+		String payload = _http.getString();
+		int start = payload.indexOf('"', payload.indexOf("\"text\":")+7)+1;
+		if (start == -1)
+		{
+			Serial.print("No response");
+			return "";
+		}
+		String response = payload.substring(start);
+		for (size_t i = 1; i < response.length(); i++)
+		{
+			// Escaped characters
+			if (response.charAt(i-1) == '\\')
+			{
+				response.setCharAt(i-1, 127);
+				// Newlines
+				if (response.charAt(i) == 'n') response.setCharAt(i, '\n');
+				continue;
+			}
+			// Unescaped quote = end
+			if (response.charAt(i) == '"')
+			{
+				return response.substring(0,i);
+				break;
+			}
+		}
+	}
+	else if (response_code>0)
+	{
+		Serial.print("HTTP Response code: ");
+		Serial.println(response_code);
+		String payload = _http.getString();
+		Serial.println(payload);
+	}
+	else
+	{
+		Serial.print("Error code: ");
+		Serial.println(_http.errorToString(response_code));
+	}
 	return "";
 // curl https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY} \
 // -H 'Content-Type: application/json' \

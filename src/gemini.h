@@ -17,7 +17,7 @@ struct GeminiMessage
 class GeminiClient
 {
 	private:
-		WiFiClientSecure _client;
+		WiFiClientSecure _wifi;
 		std::vector<GeminiMessage> _chat;
 		String _key;
 		String _endpoint;
